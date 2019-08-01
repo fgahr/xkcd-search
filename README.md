@@ -15,7 +15,7 @@ If you don't, you're out of luck for now. Sorry :(
 
 # Usage
 
-Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position.
+Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive.
 
 ```
 # Search for all of the given terms
