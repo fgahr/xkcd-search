@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+// Fetch the info for the latest comic, and put in on the resultChan.
+// In case of an error, put it to the errChan.
 func fetchLatest(resultChan chan<- xkcd.ComicInfo, errChan chan<- error) {
 	latest, err := xkcd.FetchSingleComic(0)
 	if err != nil {
@@ -20,6 +22,10 @@ func fetchLatest(resultChan chan<- xkcd.ComicInfo, errChan chan<- error) {
 
 // Get all comics, local or remote.
 func getComics(remote bool) []xkcd.ComicInfo {
+	// NOTE: The latest comic is fetched concurrently. This is not a very useful
+	// feature as it increases complexity for what is likely no measurable
+	// performance gain. This was done mainly to satisfy my own curiosity.
+	// Please forgive me.
 	latest := make(chan xkcd.ComicInfo)
 	errors := make(chan error)
 	defer close(latest)
