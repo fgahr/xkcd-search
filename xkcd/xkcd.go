@@ -35,41 +35,69 @@ func (c ComicInfo) Url() string {
 	return slashConnect(baseUrl, fmt.Sprint(c.Num))
 }
 
-// Wether a comic strip info contains any of the given keywords in a
-// relevant text field.
-func MatchesAnyKeyword(c ComicInfo, keys ...string) bool {
-	textFields := []string{
-		strings.ToLower(c.Title),
-		strings.ToLower(c.Alt),
-		strings.ToLower(c.Transcript),
+// All of the comic's text fields.
+func (c ComicInfo) allTextFields() []string {
+	return []string{c.Title, c.Alt, c.Transcript}
+}
+
+// Whether the given term can is contained in any of the fields.
+// Matching is case-insensitive.
+func keyInFields(key string, fields ...string) bool {
+	for _, field := range fields {
+		if strings.Contains(strings.ToLower(field), strings.ToLower(key)) {
+			return true
+		}
 	}
+	return false
+}
+
+// Whether any of the given keys is present in any of the given fields.
+func anyKeyInFields(keys, fields []string) bool {
 	for _, key := range keys {
 		if key == "" {
 			continue
 		}
 		key = strings.ToLower(key)
-		for _, field := range textFields {
-			if strings.Contains(field, key) {
-				return true
-			}
+		if keyInFields(key, fields...) {
+			return true
 		}
 	}
 	return false
-
 }
 
-// Whether a comic strip info contains all of the given keywords in a
-// relevant text field.
-func MatchesAllKeywords(c ComicInfo, keys ...string) bool {
+// Whether all of the given keys are present in any of the given fields.
+func allKeysInFields(keys, fields []string) bool {
 	for _, key := range keys {
 		if key == "" {
 			continue
 		}
-		if !MatchesAnyKeyword(c, key) {
+		if !keyInFields(key, fields...) {
 			return false
 		}
 	}
 	return true
+}
+
+// Wether a comic strip info contains any of the given keywords in a
+// relevant text field.
+func ContainsAnyKeyword(c ComicInfo, keys ...string) bool {
+	return anyKeyInFields(keys, c.allTextFields())
+}
+
+// Whether a comic strip info contains all of the given keywords in a
+// relevant text field.
+func ContainsAllKeywords(c ComicInfo, keys ...string) bool {
+	return allKeysInFields(keys, c.allTextFields())
+}
+
+// Whether the comic title contains any of the given keywords.
+func TitleContainsAnyKeyword(c ComicInfo, keys ...string) bool {
+	return anyKeyInFields(keys, []string{c.Title})
+}
+
+// Whether the comic title contains all of the given keywords.
+func TitleContainsAllKeywords(c ComicInfo, keys ...string) bool {
+	return allKeysInFields(keys, []string{c.Title})
 }
 
 // Obtain info for the given comic strip ID from the XKCD server.

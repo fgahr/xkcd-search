@@ -59,6 +59,22 @@ func getComics(remote bool) []xkcd.ComicInfo {
 	return comics
 }
 
+func getPredicate(matchAny, titleOnly bool) func(xkcd.ComicInfo, ...string) bool {
+	if titleOnly {
+		if matchAny {
+			return xkcd.TitleContainsAnyKeyword
+		} else {
+			return xkcd.TitleContainsAllKeywords
+		}
+	} else {
+		if matchAny {
+			return xkcd.ContainsAnyKeyword
+		} else {
+			return xkcd.ContainsAllKeywords
+		}
+	}
+}
+
 // Print info about the given comic if it matches the predicate with respect
 // to the search terms.
 func printIf(comic xkcd.ComicInfo, pred func(xkcd.ComicInfo, ...string) bool, searchTerms ...string) {
@@ -74,19 +90,24 @@ func main() {
 		log.Fatal("No arguments given.")
 	}
 
-	predicate := xkcd.MatchesAllKeywords
+	// TODO: Should be extracted to return a config struct.
+	matchAny := false
+	titleOnly := false
 	searchTerms := args
 	fetchRemote := true
 	for i, arg := range args {
 		switch arg {
 		case "--any":
-			predicate = xkcd.MatchesAnyKeyword
+			matchAny = true
 			args[i] = ""
 		case "--all":
-			predicate = xkcd.MatchesAllKeywords
+			matchAny = false
 			args[i] = ""
 		case "--local":
 			fetchRemote = false
+			args[i] = ""
+		case "--title":
+			titleOnly = true
 			args[i] = ""
 		}
 	}
@@ -96,6 +117,7 @@ func main() {
 	}
 
 	comics := getComics(fetchRemote)
+	predicate := getPredicate(matchAny, titleOnly)
 
 	for _, comic := range comics {
 		printIf(comic, predicate, searchTerms...)

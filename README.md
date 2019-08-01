@@ -26,4 +26,6 @@ xkcd-search --all you just won the game you\'re free
 xkcd-search --any math physics chemistry
 # Only query the local cache
 xkcd-search --any foo bar --local
+# Only search in comic titles
+xkcd-search --title xkcd
 ```
