@@ -88,17 +88,17 @@ func FetchSingleComic(stripNumber int) (ComicInfo, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return ComicInfo{},
-			fmt.Errorf("Unexpected response fetching comic number %d: %d", stripNumber, resp.StatusCode)
+			fmt.Errorf("Unexpected response fetching comic number %d: %d",
+				stripNumber, resp.StatusCode)
 	}
 	decoder := json.NewDecoder(resp.Body)
 	var stripInfo ComicInfo
 	err = decoder.Decode(&stripInfo)
-	// log.Println("Fetched comic number", stripNumber)
 	return stripInfo, err
 }
 
 // Fetch info of all comics from first to last, both included.
-// Returns an empty slice of first > last.
+// Returns an empty slice if first > last.
 func FetchComicRange(first int, last int) ([]ComicInfo, error) {
 	if first > last {
 		return nil, nil
