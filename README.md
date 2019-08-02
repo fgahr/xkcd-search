@@ -1,9 +1,9 @@
 # xkcd-search
 A simple search tool for the popular XKCD webcomic. This is a solution to exercise 4.12 of the book *The Go Programming Language* by Donovan & Kernighan. As such it is not meant to be used by, well, you. But feel free to try anyway.
 
-This program uses the `info.0.json` files for each comic, downloading them as required. They don't always closely resemble the graphical information of each comic, sometimes deviating considerably. The search is limited to strings (no regular expressions) and by default searches for occurrences of all arguments in any of the title, transcript, or alt (mouseover) fields. Creates a local cache of comic information data under `~/.cache/xkcd-search/store.db`.
+This program uses the `info.0.json` files for each comic, downloading them as required. They don't always closely resemble the graphical information of each comic, sometimes deviating considerably. The search is limited to strings (no regular expressions) and by default searches for occurrences of all arguments in any of the title, transcript, or alt (mouseover) fields. Search scope can be constricted with options, see below.
 
-When run normally, it fetches the latest comic, checks which are missing locally, and downloads them. For pure offline usage, use the `--local` switch (see below).
+The program creates a local cache of comic information data under `~/.cache/xkcd-search/store.db`. When run normally, it fetches the latest comic, checks which are missing locally, and downloads them. For pure offline usage, use the `--local` switch (see below).
 
 # Installation
 
