@@ -59,19 +59,59 @@ func getComics(remote bool) []xkcd.ComicInfo {
 	return comics
 }
 
-func getPredicate(matchAny, titleOnly bool) func(xkcd.ComicInfo, ...string) bool {
-	if titleOnly {
-		if matchAny {
-			return xkcd.TitleContainsAnyKeyword
-		} else {
-			return xkcd.TitleContainsAllKeywords
-		}
-	} else {
-		if matchAny {
-			return xkcd.ContainsAnyKeyword
-		} else {
+type matchWhere int
+
+const (
+	allFields matchWhere = iota
+	title
+	altText
+)
+
+type matchHow int
+
+const (
+	matchAll matchHow = iota
+	matchAny
+)
+
+type config struct {
+	where       matchWhere
+	how         matchHow
+	fetchRemote bool
+}
+
+func (c config) getPredicate() func(xkcd.ComicInfo, ...string) bool {
+	// TODO Improve error messages.
+	switch c.where {
+	case allFields:
+		switch c.how {
+		case matchAll:
 			return xkcd.ContainsAllKeywords
+		case matchAny:
+			return xkcd.ContainsAnyKeyword
+		default:
+			panic("Invalid configuration")
 		}
+	case title:
+		switch c.how {
+		case matchAll:
+			return xkcd.TitleContainsAllKeywords
+		case matchAny:
+			return xkcd.TitleContainsAnyKeyword
+		default:
+			panic("Invalid configuration")
+		}
+	case altText:
+		switch c.how {
+		case matchAll:
+			return xkcd.AltTextContainsAllKeywords
+		case matchAny:
+			return xkcd.AltTextContainsAnyKeyword
+		default:
+			panic("Invalid configuration")
+		}
+	default:
+		panic("Invalid configuration")
 	}
 }
 
@@ -83,6 +123,40 @@ func printIf(comic xkcd.ComicInfo, pred func(xkcd.ComicInfo, ...string) bool, se
 	}
 }
 
+// Determine the proper program configuration from the command line arguments.
+func getConfig(args []string) config {
+	// Default config
+	conf := config{
+		where:       allFields,
+		how:         matchAll,
+		fetchRemote: true,
+	}
+
+	for i, arg := range args {
+		switch arg {
+		case "--any":
+			conf.how = matchAny;
+			args[i] = ""
+		case "--all":
+			conf.how = matchAll
+			args[i] = ""
+		case "--local":
+			conf.fetchRemote = false
+			args[i] = ""
+		case "--title":
+			conf.where = title
+			args[i] = ""
+		case "--alt-text":
+			conf.where = altText
+			args[i] = ""
+		default:
+			// Found a search term, not a switch
+			continue
+		}
+	}
+	return conf
+}
+
 // Search all XKCD comics for the given search terms.
 func main() {
 	args := os.Args[1:]
@@ -90,36 +164,11 @@ func main() {
 		log.Fatal("No arguments given.")
 	}
 
-	// TODO: Should be extracted to return a config struct.
-	matchAny := false
-	titleOnly := false
-	searchTerms := args
-	fetchRemote := true
-	for i, arg := range args {
-		switch arg {
-		case "--any":
-			matchAny = true
-			args[i] = ""
-		case "--all":
-			matchAny = false
-			args[i] = ""
-		case "--local":
-			fetchRemote = false
-			args[i] = ""
-		case "--title":
-			titleOnly = true
-			args[i] = ""
-		}
-	}
-
-	if len(searchTerms) == 0 {
-		log.Fatal("No search terms given.")
-	}
-
-	comics := getComics(fetchRemote)
-	predicate := getPredicate(matchAny, titleOnly)
+	conf := getConfig(args)
+	comics := getComics(conf.fetchRemote)
+	predicate := conf.getPredicate()
 
 	for _, comic := range comics {
-		printIf(comic, predicate, searchTerms...)
+		printIf(comic, predicate, args...)
 	}
 }

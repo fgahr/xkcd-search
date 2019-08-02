@@ -15,7 +15,7 @@ If you don't, you're out of luck for now. Sorry :(
 
 # Usage
 
-Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive.
+Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive. Note that there is currently no support for `-h|--help`. There might be some day. Then again, there might not. Good luck.
 
 ```
 # Search for all of the given terms
@@ -28,4 +28,6 @@ xkcd-search --any math physics chemistry
 xkcd-search --any foo bar --local
 # Only search in comic titles
 xkcd-search --title xkcd
+# Only search in alt text (mouseover)
+xkcd-search --alt-text build environment grinning holding spatula
 ```

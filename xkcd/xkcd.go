@@ -53,6 +53,7 @@ func keyInFields(key string, fields ...string) bool {
 
 // Whether any of the given keys is present in any of the given fields.
 func anyKeyInFields(keys, fields []string) bool {
+	numActualKeys := 0
 	for _, key := range keys {
 		if key == "" {
 			continue
@@ -61,12 +62,17 @@ func anyKeyInFields(keys, fields []string) bool {
 		if keyInFields(key, fields...) {
 			return true
 		}
+		numActualKeys++
+	}
+	if numActualKeys == 0 {
+		panic("No search terms given")
 	}
 	return false
 }
 
 // Whether all of the given keys are present in any of the given fields.
 func allKeysInFields(keys, fields []string) bool {
+	numActualKeys := 0
 	for _, key := range keys {
 		if key == "" {
 			continue
@@ -74,6 +80,10 @@ func allKeysInFields(keys, fields []string) bool {
 		if !keyInFields(key, fields...) {
 			return false
 		}
+		numActualKeys++
+	}
+	if numActualKeys == 0 {
+		panic("No search terms given")
 	}
 	return true
 }
@@ -90,14 +100,24 @@ func ContainsAllKeywords(c ComicInfo, keys ...string) bool {
 	return allKeysInFields(keys, c.allTextFields())
 }
 
-// Whether the comic title contains any of the given keywords.
+// Whether the comic's title contains any of the given keywords.
 func TitleContainsAnyKeyword(c ComicInfo, keys ...string) bool {
 	return anyKeyInFields(keys, []string{c.Title})
 }
 
-// Whether the comic title contains all of the given keywords.
+// Whether the comic's title contains all of the given keywords.
 func TitleContainsAllKeywords(c ComicInfo, keys ...string) bool {
 	return allKeysInFields(keys, []string{c.Title})
+}
+
+// Whether the comic's alt text contains any of the given keywords.
+func AltTextContainsAnyKeyword(c ComicInfo, keys ...string) bool {
+	return anyKeyInFields(keys, []string{c.Alt})
+}
+
+// Whether the comic's alt text contains all of the given keywords.
+func AltTextContainsAllKeywords(c ComicInfo, keys ...string) bool {
+	return allKeysInFields(keys, []string{c.Alt})
 }
 
 // Obtain info for the given comic strip ID from the XKCD server.
@@ -156,6 +176,7 @@ func FetchComicRange(first int, last int) ([]ComicInfo, error) {
 		}(i)
 	}
 
+	// Collect
 	var comics []ComicInfo
 	var errors []error
 	for i := first; i <= last; i++ {
