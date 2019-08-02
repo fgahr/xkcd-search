@@ -7,6 +7,7 @@ import (
 	"github.com/freag/xkcd-search/xkcd"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 // Fetch the info for the latest comic, and put in on the resultChan.
@@ -22,10 +23,10 @@ func fetchLatest(resultChan chan<- xkcd.ComicInfo, errChan chan<- error) {
 
 // Get all comics, local or remote.
 func getComics(remote bool) []xkcd.ComicInfo {
-	// NOTE: The latest comic is fetched concurrently. This is not a very useful
-	// feature as it increases complexity for what is likely no measurable
-	// performance gain. This was done mainly to satisfy my own curiosity.
-	// Please forgive me.
+	// NOTE: The latest comic is fetched asynchronously. This is not a very
+	// useful feature as it increases complexity for what is likely no
+	// measurable performance gain. This was done mainly to satisfy my own
+	// curiosity. Please forgive me.
 	latest := make(chan xkcd.ComicInfo)
 	errors := make(chan error)
 	defer close(latest)
@@ -115,12 +116,23 @@ func (c config) getPredicate() func(xkcd.ComicInfo, ...string) bool {
 	}
 }
 
-// Print info about the given comic if it matches the predicate with respect
-// to the search terms.
-func printIf(comic xkcd.ComicInfo, pred func(xkcd.ComicInfo, ...string) bool, searchTerms ...string) {
-	if pred(comic, searchTerms...) {
-		fmt.Printf("%s: %s\n", comic.SafeTitle, comic.Url())
+func usageAndExit() {
+	execName, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
 	}
+	fmt.Printf("Usage:  %s [options] keywords...\n", filepath.Base(execName))
+	fmt.Print(`
+Available options:
+-h,--help   Print this message
+   --all       Search for comics containing all of the keywords (default)
+   --any       Search for comics containing any of the keywords
+
+   --local     Only search to local database, don't connect to the server
+   --title     Only search for matches in a comic's title
+   --alt-text  Only search for matches in a comic's alt-text
+`)
+	os.Exit(0)
 }
 
 // Determine the proper program configuration from the command line arguments.
@@ -149,12 +161,24 @@ func getConfig(args []string) config {
 		case "--alt-text":
 			conf.where = altText
 			args[i] = ""
+		case "-h":
+			usageAndExit()
+		case "--help":
+			usageAndExit()
 		default:
 			// Found a search term, not a switch
 			continue
 		}
 	}
 	return conf
+}
+
+// Print info about the given comic if it matches the predicate with respect
+// to the search terms.
+func printIf(comic xkcd.ComicInfo, pred func(xkcd.ComicInfo, ...string) bool, searchTerms ...string) {
+	if pred(comic, searchTerms...) {
+		fmt.Printf("%s: %s\n", comic.SafeTitle, comic.Url())
+	}
 }
 
 // Search all XKCD comics for the given search terms.

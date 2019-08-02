@@ -1,4 +1,4 @@
-// Package storage manages persistent local storage of XKCD comic metadata
+// Package for managing persistent local metadata of XKCD comics
 package storage
 
 import (

@@ -15,7 +15,7 @@ If you don't, you're out of luck for now. Sorry :(
 
 # Usage
 
-Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive. Note that there is currently no support for `-h|--help`. There might be some day. Then again, there might not. Good luck.
+Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive.
 
 ```
 # Search for all of the given terms
