@@ -60,6 +60,7 @@ func getComics(remote bool) []xkcd.ComicInfo {
 	return comics
 }
 
+// Enum type describing which fields to consider for matching.
 type matchWhere int
 
 const (
@@ -68,6 +69,7 @@ const (
 	altText
 )
 
+// Enum type describing how keywords are matched to the selected fields.
 type matchHow int
 
 const (
@@ -75,12 +77,14 @@ const (
 	matchAny
 )
 
+// Struct containing all essential configuration options for this program.
 type config struct {
 	where       matchWhere
 	how         matchHow
 	fetchRemote bool
 }
 
+// Determine the predicate to select comics from the program's configuration.
 func (c config) getPredicate() func(xkcd.ComicInfo, ...string) bool {
 	// TODO Improve error messages.
 	switch c.where {
@@ -116,6 +120,8 @@ func (c config) getPredicate() func(xkcd.ComicInfo, ...string) bool {
 	}
 }
 
+// Print usage information and exit the program.
+// Exits with return value 0, indicating success.
 func usageAndExit() {
 	execName, err := os.Executable()
 	if err != nil {
