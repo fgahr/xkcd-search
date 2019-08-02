@@ -18,6 +18,9 @@ If you don't, you're out of luck for now. Sorry :(
 Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive.
 
 ```
+# Print usage information and available options
+xkcd-search -h
+xkcd-search --help
 # Search for all of the given terms
 xkcd-search the game
 # Made explicit
