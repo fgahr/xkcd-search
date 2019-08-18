@@ -3,7 +3,7 @@ package storage
 
 import (
 	"encoding/json"
-	"github.com/freag/xkcd-search/xkcd"
+	"github.com/fgahr/xkcd-search/xkcd"
 	"os"
 	"path/filepath"
 	"sort"

@@ -9,7 +9,7 @@ The program creates a local cache of comic information data under `~/.cache/xkcd
 
 If you have the go tool installed, simply run
 ```
-go get github.com/freag/xkcd-search
+go get github.com/fgahr/xkcd-search
 ```
 If you don't, you're out of luck for now. Sorry :(
 

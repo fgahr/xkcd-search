@@ -3,8 +3,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/freag/xkcd-search/storage"
-	"github.com/freag/xkcd-search/xkcd"
+	"github.com/fgahr/xkcd-search/storage"
+	"github.com/fgahr/xkcd-search/xkcd"
 	"log"
 	"os"
 	"path/filepath"
