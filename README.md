@@ -18,19 +18,35 @@ If you don't, you're out of luck for now. Sorry :(
 Some switches are accepted, all other arguments are assumed to be search terms. Switches can appear in any position. Search is case-insensitive.
 
 ```
-# Print usage information and available options
-xkcd-search -h
-xkcd-search --help
+ xkcd-search --help
+Usage: xkcd-search [options] keywords...
+Available options:
+-h,--help      Print this message
+   --all       Search for comics containing all of the keywords (default)
+   --any       Search for comics containing any of the keywords
+
+   --local     Only search the local database, don't connect to the server
+   --title     Only search for matches in a comic's title
+   --alt-text  Only search for matches in a comic's alt-text
+
+
+# EXAMPLES:
+
 # Search for all of the given terms
-xkcd-search the game
+ xkcd-search the game
+
 # Made explicit
-xkcd-search --all you just won the game you\'re free
+ xkcd-search --all you just won the game you\'re free
+
 # One match is enough
-xkcd-search --any math physics chemistry
+ xkcd-search --any math physics chemistry
+
 # Only query the local cache
-xkcd-search --any foo bar --local
+ xkcd-search --any foo bar --local
+
 # Only search in comic titles
-xkcd-search --title xkcd
+ xkcd-search --title xkcd
+
 # Only search in alt text (mouseover)
-xkcd-search --alt-text build environment grinning holding spatula
+ xkcd-search --alt-text build environment grinning holding spatula
 ```

@@ -130,11 +130,11 @@ func usageAndExit() {
 	fmt.Printf("Usage:  %s [options] keywords...\n", filepath.Base(execName))
 	fmt.Print(`
 Available options:
--h,--help   Print this message
+-h,--help      Print this message
    --all       Search for comics containing all of the keywords (default)
    --any       Search for comics containing any of the keywords
 
-   --local     Only search to local database, don't connect to the server
+   --local     Only search the local database, don't connect to the server
    --title     Only search for matches in a comic's title
    --alt-text  Only search for matches in a comic's alt-text
 `)
@@ -153,7 +153,7 @@ func getConfig(args []string) config {
 	for i, arg := range args {
 		switch arg {
 		case "--any":
-			conf.how = matchAny;
+			conf.how = matchAny
 			args[i] = ""
 		case "--all":
 			conf.how = matchAll
