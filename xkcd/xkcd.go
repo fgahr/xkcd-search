@@ -11,6 +11,7 @@ import (
 
 // The XKCD base URL.
 const baseUrl = "https://xkcd.com"
+const concurrentFetch = 100
 
 // The URL suffix for comic strip info data (JSON).
 const infoSuffix = "info.0.json"
@@ -151,28 +152,25 @@ func FetchComicRange(first int, last int) ([]ComicInfo, error) {
 	if first > last {
 		return nil, nil
 	}
-	comicChan := make(chan ComicInfo, 100)
-	errorChan := make(chan error, 100)
-	schedChan := make(chan struct{}, 100)
+	comicChan := make(chan ComicInfo, concurrentFetch)
+	errorChan := make(chan error, concurrentFetch)
+	schedChan := make(chan struct{}, concurrentFetch)
 	defer close(comicChan)
 	defer close(errorChan)
 	defer close(schedChan)
-	for k := 0; k < 100; k++ {
-		schedChan <- struct{}{}
-	}
 	for i := first; i <= last; i++ {
 		if i == 404 {
 			continue
 		}
 		go func(idx int) {
-			<-schedChan
+			schedChan <- struct{}{}
 			info, err := FetchSingleComic(idx)
 			if err != nil {
 				errorChan <- err
 			} else {
 				comicChan <- info
 			}
-			schedChan <- struct{}{}
+			<- schedChan
 		}(i)
 	}
 
